@@ -14,3 +14,6 @@ docs/ficha_*.json
 # Archivos de SO
 .DS_Store
 Thumbs.db
+
+# Base de datos local
+BD.xlsx
