@@ -45,13 +45,12 @@ Estructura del Repositorio
 ├── README.md
 
 ├── generador_fichas/            
-│   ├── main.py
-│   ├── BD.xlsx
-│   ├── RegistrosAuditoria.json
-│   ├── src/
-│   │   ├── generador_fichas.py
-│   │   └── ficha_template.json
-│   └── tests/
+   ├── main.py   ├── BD.xlsx
+   ├── RegistrosAuditoria.json
+   ├── src/
+   │   ├── generador_fichas.py
+   │   └── ficha_template.json
+   └── tests/
 
 ├── backend/                     
 │   ├── main.py                  
