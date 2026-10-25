@@ -41,7 +41,7 @@ Apoyo Inteligente: IA (Claude, Gemini).
 Estructura del Repositorio
 /proyecto
 ├── README.md
-├── generador_fichas/            Primera herramienta (CLI) del proyecto
+├── generador_fichas/            
 │   ├── main.py
 │   ├── BD.xlsx
 │   ├── RegistrosAuditoria.json
@@ -49,27 +49,27 @@ Estructura del Repositorio
 │   │   ├── generador_fichas.py
 │   │   └── ficha_template.json
 │   └── tests/
-├── backend/                     API FastAPI de la plataforma
-│   ├── main.py                  App, manejo de errores, tarea semanal
-│   ├── config.py                Variables de entorno (DATA_DIR, SECRET_KEY, SMTP)
-│   ├── database.py              Acceso a los CSV
-│   ├── permisos.py              Roles y permisos
-│   ├── routers/                 Endpoints por módulo
-│   ├── schemas/                 Modelos Pydantic
-│   ├── services/                Reglas de negocio
-│   ├── data/                    CSV de la aplicación (se crean vacíos al iniciar)
-│   ├── tests/                   Pruebas unitarias (pytest)
-│   ├── pruebas/prueba_api.py    Pruebas de aceptación de la API
+├── backend/                     
+│   ├── main.py                  
+│   ├── config.py                
+│   ├── database.py              
+│   ├── permisos.py              
+│   ├── routers/                 
+│   ├── schemas/                 
+│   ├── services/                
+│   ├── data/                    
+│   ├── tests/                   
+│   ├── pruebas/prueba_api.py    
 │   ├── requirements.txt
 │   └── requirements-dev.txt
-└── frontend/                    Interfaz web React
+└── frontend/                    
     ├── package.json
     └── src/
-        ├── api/cliente.js       Única capa que llama a la API
-        ├── componentes/         Barra con menú por rol, semáforo, modal, gráfico
-        ├── hooks/               Sesión, carga de datos y navegación
-        ├── paginas/             Login, Dashboard, Estudiantes, Ficha, Mis casos, etc.
-        └── pruebas/             Pruebas unitarias (Vitest)
+        ├── api/cliente.js       
+        ├── componentes/         
+        ├── hooks/               
+        ├── paginas/             
+        └── pruebas/             
 Requisitos Previos e Instalación
 Python 3.11 o superior (3.8 o superior basta para el generador de fichas).
 Node.js 20 o superior.
