@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 
 import config
 import database
-from routers import auth, catalogos, estudiantes, importaciones, reportes, riesgo
+from routers import auth, catalogos, estudiantes, importaciones, reportes, riesgo, seguimiento
 from services import auth_service, riesgo_service
 from services.errores import ErrorNegocio
 
@@ -52,5 +52,5 @@ def inicio():
     return {"mensaje": "API de seguimiento de trayectorias escolares funcionando"}
 
 
-for modulo in (auth, catalogos, estudiantes, riesgo, importaciones, reportes):
+for modulo in (auth, catalogos, estudiantes, seguimiento, riesgo, importaciones, reportes):
     app.include_router(modulo.router)

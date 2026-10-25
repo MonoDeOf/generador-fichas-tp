@@ -5,6 +5,7 @@ import { useSesion } from '../hooks/useSesion'
 export const MENU = [
   { pagina: 'dashboard', texto: 'Dashboard', permiso: 'ver_dashboard' },
   { pagina: 'estudiantes', texto: 'Estudiantes', permiso: 'ver_estudiantes' },
+  { pagina: 'casos', texto: 'Mis casos', permiso: 'ver_seguimiento' },
   { pagina: 'importar', texto: 'Importar datos', permiso: 'importar_datos' },
   { pagina: 'reglas', texto: 'Reglas de riesgo', permiso: 'configurar_reglas' },
 ]

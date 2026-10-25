@@ -61,6 +61,14 @@ export const api = {
   anotaciones: (rut) => pedir('GET', `/estudiantes/${r(rut)}/anotaciones`),
   riesgo: (rut) => pedir('GET', `/estudiantes/${r(rut)}/riesgo`),
   actualizarApoderado: (rut, datos) => pedir('PUT', `/estudiantes/${r(rut)}/apoderado`, datos),
+  whatsapp: (rut) => pedir('GET', `/estudiantes/${r(rut)}/contacto-whatsapp`),
+
+  seguimiento: (rut) => pedir('GET', `/estudiantes/${r(rut)}/seguimiento`),
+  registrarIntervencion: (rut, datos) => pedir('POST', `/estudiantes/${r(rut)}/intervenciones`, datos),
+  derivarCaso: (rut, datos) => pedir('POST', `/estudiantes/${r(rut)}/caso/derivar`, datos),
+  cambiarEstadoCaso: (rut, datos) => pedir('PATCH', `/estudiantes/${r(rut)}/caso/estado`, datos),
+  casosAsignados: () => pedir('GET', '/casos/asignados'),
+  profesionales: () => pedir('GET', '/casos/profesionales'),
 
   reglas: () => pedir('GET', '/config/reglas'),
   guardarReglas: (datos) => pedir('PUT', '/config/reglas', datos),

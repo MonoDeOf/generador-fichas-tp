@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from permisos import EDITAR_CONTACTO, VER_CONVIVENCIA, VER_ESTUDIANTES, VER_FICHA, VER_RIESGO
+from permisos import (CONTACTAR_APODERADO, EDITAR_CONTACTO, VER_CONVIVENCIA, VER_ESTUDIANTES, VER_FICHA,
+                      VER_RIESGO)
 from routers.dependencias import requiere
 from schemas.modelos import ApoderadoEntrada
 from services import academico_service as acad
-from services import estudiante_service, riesgo_service
+from services import estudiante_service, notificacion_service, riesgo_service
 
 router = APIRouter(prefix="/estudiantes", tags=["Estudiantes"])
 
@@ -56,3 +57,10 @@ def actualizar_apoderado(rut: str, datos: ApoderadoEntrada, usuario: dict = Depe
     apoderado = estudiante_service.actualizar_apoderado(usuario, rut, datos.model_dump())
     return {"apoderado": apoderado,
             "otros_estudiantes_afectados": estudiante_service.estudiantes_que_comparten_apoderado(rut)}
+
+
+@router.get("/{rut}/contacto-whatsapp")
+def contacto_whatsapp(rut: str, usuario: dict = Depends(requiere(CONTACTAR_APODERADO))):
+    """RF10 / HU 3.2: enlace wa.me con mensaje predefinido."""
+    estudiante_service.obtener_visible(usuario, rut)
+    return notificacion_service.enlace_whatsapp(rut, usuario["nombre"])

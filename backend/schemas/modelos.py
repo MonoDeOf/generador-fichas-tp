@@ -1,4 +1,5 @@
 """Modelos Pydantic de entrada (JSON) con los campos reales del proyecto."""
+from datetime import date
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -13,6 +14,22 @@ class ApoderadoEntrada(BaseModel):
     nombre: str = Field(min_length=1, max_length=50)
     apellido_apoderado: str = Field(min_length=1, max_length=50)
     telefono: str = Field(pattern=r"^[0-9]{9}$", description="9 dígitos numéricos (HU 2.2)")
+
+
+class IntervencionEntrada(BaseModel):
+    fecha: date
+    tipo_intervencion: str = Field(min_length=1)
+    descripcion: str = Field(min_length=1, max_length=2000)
+
+
+class DerivacionEntrada(BaseModel):
+    id_usuario_destino: int
+    motivo: str = Field(min_length=1, max_length=500)
+
+
+class EstadoCasoEntrada(BaseModel):
+    estado: Literal["abierto", "cerrado"]
+    motivo: str = Field(default="", max_length=500)
 
 
 class ReglasEntrada(BaseModel):

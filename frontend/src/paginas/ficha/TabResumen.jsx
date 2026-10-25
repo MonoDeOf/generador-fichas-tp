@@ -1,8 +1,21 @@
 import { useState } from 'react'
+import { api } from '../../api/cliente'
+import { MensajeError } from '../../componentes/Estado'
 import GraficoBarras from '../../componentes/GraficoBarras'
 import { ListaFactores } from '../../componentes/Semaforo'
+import { useDatos } from '../../hooks/useDatos'
 import { useSesion } from '../../hooks/useSesion'
 import FormContacto from './FormContacto'
+
+// HU 3.2: enlace directo wa.me con el mensaje predefinido que entrega el backend.
+function BotonWhatsApp({ rut }) {
+  const estado = useDatos(() => api.whatsapp(rut), [rut])
+  if (estado.error) return <MensajeError error={estado.error} />
+  return (
+    <a className={`btn btn-success btn-sm ${estado.datos ? '' : 'disabled'}`} href={estado.datos?.url} target="_blank"
+      rel="noopener noreferrer">Contactar por WhatsApp</a>
+  )
+}
 
 export default function TabResumen({ rut, ficha, alCambiar }) {
   const { puede } = useSesion()
@@ -34,6 +47,7 @@ export default function TabResumen({ rut, ficha, alCambiar }) {
                 </dl>
                 <div className="d-flex gap-2 flex-wrap">
                   {puede('editar_contacto') && <button className="btn btn-outline-primary btn-sm" onClick={() => setEditando(true)}>Editar contacto</button>}
+                  {puede('contactar_apoderado') && <BotonWhatsApp rut={rut} />}
                 </div>
               </>
             )

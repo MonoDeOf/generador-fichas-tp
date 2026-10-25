@@ -36,12 +36,20 @@ TABLAS_BASE = {
 }
 
 # Tablas agregadas por la plataforma. No existen en BD_organizada porque el material
-# no entrega datos de usuarios ni reglas, pero los requisitos RF14 y RNF04/RNF05
-# necesitan persistirlos.
+# no entrega datos de usuarios, bitácora, casos, reglas ni notificaciones, pero los
+# requisitos RF09, RF12, RF14, RF16, RF03 y RNF04/RNF05 necesitan persistirlos.
 TABLAS_NUEVAS = {
     "USUARIO": ["id_usuario", "nombre_usuario", "nombre", "rol", "id_nivel", "correo",
                 "contrasena_hash", "activo"],
+    "INTERVENCION": ["id_intervencion", "rut_estudiante", "fecha", "tipo_intervencion",
+                     "descripcion", "id_usuario", "fecha_registro"],
+    "CASO": ["id_caso", "rut_estudiante", "estado", "id_usuario_responsable",
+             "fecha_actualizacion"],
+    "HISTORIAL_CASO": ["id_historial", "id_caso", "estado", "id_usuario_responsable",
+                       "id_usuario_accion", "motivo", "fecha"],
     "REGLA_RIESGO": ["parametro", "valor", "fecha_actualizacion", "id_usuario"],
+    "NOTIFICACION": ["id_notificacion", "id_usuario", "rut_estudiante", "tipo", "mensaje",
+                     "fecha", "leida", "clave_evento"],
 }
 
 
