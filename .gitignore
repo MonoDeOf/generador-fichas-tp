@@ -1,16 +1,6 @@
-# Cache y compilados de Python
 __pycache__/
-*.py[cod]
-*$py.class
-
-# Entornos virtuales
-venv/
-env/
-.env
-
-# Archivos generados (Evita subir los JSON generados si hay datos sensibles de la Ley 19.628)
-docs/ficha_*.json
-
-# Archivos de SO
-.DS_Store
-Thumbs.db
+*.pyc
+backend/escuela.db
+backend/escuela.tmp
+backend/risk_config.json
+node_modules/

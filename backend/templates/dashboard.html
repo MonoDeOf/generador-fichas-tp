@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Directivo - Proyecto Horizonte</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+        h1 { color: #2c3e50; text-align: center; }
+        .kpi-container { display: flex; justify-content: space-around; margin-bottom: 30px; }
+        .kpi-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; width: 20%; border-top: 4px solid #3498db; }
+        .kpi-card h3 { margin: 0; font-size: 14px; color: #7f8c8d; text-transform: uppercase; }
+        .kpi-card p { font-size: 28px; font-weight: bold; color: #2c3e50; margin: 10px 0 0 0; }
+        .charts-container { display: flex; justify-content: space-between; gap: 20px; }
+        .chart-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 48%; }
+        .search-filters { display: flex; gap: 10px; margin-bottom: 12px; }
+        .search-filters input, .search-filters select { padding: 9px 10px; border: 1px solid #dcdfe4; border-radius: 6px; font-size: 14px; font-family: Arial, sans-serif; color: #2c3e50; }
+        .search-filters input { flex: 1; min-width: 0; }
+        .search-count { font-size: 12px; color: #7f8c8d; margin: 0 0 8px 0; }
+        .search-results { max-height: 340px; overflow-y: auto; border-top: 1px solid #ecf0f1; }
+        .search-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .search-table th { position: sticky; top: 0; background: #f8f9fa; color: #7f8c8d; font-size: 12px; text-transform: uppercase; text-align: left; padding: 8px; }
+        .search-table td { padding: 8px; border-bottom: 1px solid #ecf0f1; color: #2c3e50; }
+        .search-table td.num, .search-table th.num { text-align: right; }
+        .asis-cell { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+        .asis-bar { width: 60px; height: 8px; background: #ecf0f1; border-radius: 4px; overflow: hidden; }
+        .asis-cell strong { min-width: 48px; text-align: right; }
+        .asis-bar span { display: block; height: 100%; border-radius: 4px; }
+        .search-empty { text-align: center; color: #7f8c8d; padding: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Directivo - Riesgo y Asistencia</h1>
+    <div class="kpi-container">
+        <div class="kpi-card" style="border-color: #f39c12;">
+            <h3>Asistencia Global</h3>
+            <p id="kpi-asistencia">--%</p>
+        </div>
+        <div class="kpi-card" style="border-color: #9b59b6;">
+            <h3>Promedio Notas (Liceo)</h3>
+            <p id="kpi-promedio">--</p>
+        </div>
+        <div class="kpi-card" style="border-color: #2ecc71;">
+            <h3>Anot. Positivas</h3>
+            <p id="kpi-positivas">--</p>
+        </div>
+        <div class="kpi-card" style="border-color: #e74c3c;">
+            <h3>Anot. Negativas</h3>
+            <p id="kpi-negativas">--</p>
+        </div>
+    </div>
+    <div class="charts-container">
+        <div class="chart-box">
+            <h3 style="text-align: center; color: #2c3e50;">Promedio de Asistencia por Curso</h3>
+            <canvas id="chartCurso"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3 style="text-align: center; color: #2c3e50;">Buscador de Alumnos</h3>
+            <div class="search-filters">
+                <input type="search" id="buscar-nombre" placeholder="Buscar por nombre o apellido..." autocomplete="off">
+                <select id="buscar-curso"><option value="">Todos los cursos</option></select>
+            </div>
+            <p class="search-count" id="buscar-conteo"></p>
+            <div class="search-results">
+                <table class="search-table">
+                    <thead><tr><th>Alumno</th><th>Curso</th><th class="num">Promedio</th><th class="num">Asistencia</th></tr></thead>
+                    <tbody id="buscar-resultados"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        fetch('/api/metricas/globales').then(response => response.json()).then(data => {
+            document.getElementById('kpi-asistencia').innerText = data.asistencia_global + '%';
+            document.getElementById('kpi-promedio').innerText = data.promedio_global;
+            document.getElementById('kpi-positivas').innerText = data.anotaciones.positivas;
+            document.getElementById('kpi-negativas').innerText = data.anotaciones.negativas;
+        });
+
+        fetch('/api/asistencia/curso').then(response => response.json()).then(data => {
+            const labels = data.map(item => item.nivel);
+            const values = data.map(item => item.asistencia);
+            new Chart(document.getElementById('chartCurso'), {
+                type: 'bar',
+                data: { labels: labels, datasets: [{ label: '% de Asistencia', data: values, backgroundColor: '#3498db', borderRadius: 4 }] },
+                options: { scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+        });
+
+        // Buscador de alumnos por nombre y curso
+        let alumnos = [];
+        const normalizar = t => (t || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        const escapar = t => (t || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+        function renderAlumnos() {
+            const q = normalizar(document.getElementById('buscar-nombre').value);
+            const curso = document.getElementById('buscar-curso').value;
+            const filtrados = alumnos.filter(a =>
+                (!curso || a.nivel === curso) &&
+                (!q || q.split(/\s+/).every(p => normalizar(a.nombre_completo).includes(p)))
+            );
+            document.getElementById('buscar-conteo').innerText =
+                filtrados.length + ' de ' + alumnos.length + ' alumnos (ordenados por menor asistencia)';
+            const tbody = document.getElementById('buscar-resultados');
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="search-empty">No se encontraron alumnos.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = filtrados.map(a => {
+                const asis = a.asistencia;
+                const color = asis !== null && asis < 85 ? '#e74c3c' : '#f1c40f';
+                const asisHtml = asis === null ? '—' :
+                    '<div class="asis-cell"><div class="asis-bar"><span style="width:' + asis + '%;background:' + color + '"></span></div>' +
+                    '<strong style="color:' + (asis < 85 ? '#e74c3c' : '#2c3e50') + '">' + asis.toFixed(1) + '%</strong></div>';
+                return '<tr><td>' + escapar(a.nombre_completo) + '</td><td>' + escapar(a.nivel) + '</td>' +
+                       '<td class="num">' + (a.promedio === null ? '—' : a.promedio.toFixed(1)) + '</td>' +
+                       '<td class="num">' + asisHtml + '</td></tr>';
+            }).join('');
+        }
+
+        fetch('/api/alumnos').then(response => response.json()).then(data => {
+            alumnos = data;
+            const cursos = [...new Set(data.map(a => a.nivel).filter(Boolean))].sort();
+            const select = document.getElementById('buscar-curso');
+            cursos.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; select.appendChild(o); });
+            renderAlumnos();
+        });
+        document.getElementById('buscar-nombre').addEventListener('input', renderAlumnos);
+        document.getElementById('buscar-curso').addEventListener('change', renderAlumnos);
+    </script>
+</body>
+</html>
