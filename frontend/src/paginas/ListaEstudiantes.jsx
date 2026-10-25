@@ -3,6 +3,7 @@ import { api } from '../api/cliente'
 import { ConDatos } from '../componentes/Estado'
 import Semaforo from '../componentes/Semaforo'
 import { useDatos } from '../hooks/useDatos'
+import { enlace } from '../hooks/useRuta'
 import { useSesion } from '../hooks/useSesion'
 
 const nombreCompleto = (e) => `${e.nombre} ${e.apellido_paterno} ${e.apellido_materno}`
@@ -67,7 +68,7 @@ export default function ListaEstudiantes() {
                   {lista.map((e) => (
                     <tr key={e.rut_estudiante}>
                       {verRiesgo && <td><Semaforo nivel={e.nivel_riesgo} factores={e.factores} nombre={nombreCompleto(e)} /></td>}
-                      <td>{nombreCompleto(e)}</td>
+                      <td><a href={enlace('estudiante', e.rut_estudiante)}>{nombreCompleto(e)}</a></td>
                       <td>{e.rut_estudiante}</td><td>{e.nombre_nivel}</td><td>{e.nombre_especialidad || '-'}</td>
                       {verRiesgo && <td>{e.porcentaje_asistencia}%</td>}
                     </tr>
