@@ -39,7 +39,9 @@ Herramientas de Gestión y Versionado: Jira, Git, GitHub.
 Entorno de Desarrollo: Visual Studio Code.
 Apoyo Inteligente: IA (Claude, Gemini).
 Estructura del Repositorio
+
 /proyecto
+
 ├── README.md
 ├── generador_fichas/            
 │   ├── main.py
