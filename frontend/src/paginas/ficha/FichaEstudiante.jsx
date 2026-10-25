@@ -7,12 +7,14 @@ import TabAsistencia from './TabAsistencia'
 import TabCalificaciones from './TabCalificaciones'
 import TabConvivencia from './TabConvivencia'
 import TabResumen from './TabResumen'
+import TabSeguimiento from './TabSeguimiento'
 
 const PESTANAS = [
   { id: 'resumen', texto: 'Ficha', componente: TabResumen },
   { id: 'asistencia', texto: 'Asistencia', componente: TabAsistencia },
   { id: 'calificaciones', texto: 'Calificaciones', componente: TabCalificaciones },
   { id: 'convivencia', texto: 'Convivencia', componente: TabConvivencia, permiso: 'ver_convivencia' },
+  { id: 'seguimiento', texto: 'Seguimiento', componente: TabSeguimiento, permiso: 'ver_seguimiento' },
 ]
 
 // RF05 / HU 2.1: ficha integral con pestañas.

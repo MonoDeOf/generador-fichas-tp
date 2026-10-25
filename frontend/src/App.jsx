@@ -7,12 +7,14 @@ import FichaEstudiante from './paginas/ficha/FichaEstudiante'
 import Importacion from './paginas/Importacion'
 import ListaEstudiantes from './paginas/ListaEstudiantes'
 import Login from './paginas/Login'
+import MisCasos from './paginas/MisCasos'
 import ReglasRiesgo from './paginas/ReglasRiesgo'
 
 const PAGINAS = {
   dashboard: { componente: Dashboard, permiso: 'ver_dashboard' },
   estudiantes: { componente: ListaEstudiantes, permiso: 'ver_estudiantes' },
   estudiante: { componente: FichaEstudiante, permiso: 'ver_ficha' },
+  casos: { componente: MisCasos, permiso: 'ver_seguimiento' },
   importar: { componente: Importacion, permiso: 'importar_datos' },
   reglas: { componente: ReglasRiesgo, permiso: 'configurar_reglas' },
 }

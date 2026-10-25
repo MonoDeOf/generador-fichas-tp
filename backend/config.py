@@ -13,3 +13,6 @@ TOKEN_HORAS_VALIDEZ = int(os.getenv("TOKEN_HORAS_VALIDEZ", "8"))
 
 # Orígenes permitidos para el frontend (Vite usa el puerto 5173 por defecto).
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+
+# Código de país usado para el enlace wa.me (los teléfonos del material tienen 9 dígitos).
+CODIGO_PAIS_WHATSAPP = os.getenv("CODIGO_PAIS_WHATSAPP", "56")
