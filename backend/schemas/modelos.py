@@ -48,3 +48,21 @@ class ArchivoCsv(BaseModel):
 
 class ImportacionEntrada(BaseModel):
     archivos: list[ArchivoCsv] = Field(min_length=1)
+
+
+class UsuarioNuevo(BaseModel):
+    nombre_usuario: str = Field(min_length=3, max_length=30)
+    nombre: str = Field(min_length=1, max_length=80)
+    rol: str
+    id_nivel: int | None = None
+    correo: str | None = None
+    contrasena: str = Field(min_length=8, max_length=100)
+
+
+class UsuarioCambios(BaseModel):
+    nombre: str = Field(min_length=1, max_length=80)
+    rol: str
+    id_nivel: int | None = None
+    correo: str | None = None
+    activo: bool = True
+    contrasena: str | None = Field(default=None, min_length=8, max_length=100)

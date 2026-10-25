@@ -48,8 +48,11 @@ TABLAS_NUEVAS = {
     "HISTORIAL_CASO": ["id_historial", "id_caso", "estado", "id_usuario_responsable",
                        "id_usuario_accion", "motivo", "fecha"],
     "REGLA_RIESGO": ["parametro", "valor", "fecha_actualizacion", "id_usuario"],
+    "ESTADO_RIESGO": ["rut_estudiante", "nivel_riesgo", "fecha_actualizacion"],
     "NOTIFICACION": ["id_notificacion", "id_usuario", "rut_estudiante", "tipo", "mensaje",
                      "fecha", "leida", "clave_evento"],
+    "REPORTE_SEMANAL": ["id_reporte", "semana", "fecha_generacion", "id_usuario_destino",
+                        "rut_estudiante", "nivel_riesgo", "condicion", "enviado_correo"],
 }
 
 

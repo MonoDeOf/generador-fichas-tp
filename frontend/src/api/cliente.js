@@ -75,5 +75,16 @@ export const api = {
   importar: (datos) => pedir('POST', '/importaciones', datos),
   estadoTablas: () => pedir('GET', '/importaciones/estado'),
 
+  notificaciones: () => pedir('GET', '/notificaciones'),
+  noLeidas: () => pedir('GET', '/notificaciones/no-leidas'),
+  marcarLeida: (id) => pedir('PATCH', `/notificaciones/${id}/leida`),
+  marcarTodasLeidas: () => pedir('PATCH', '/notificaciones/leidas'),
+
   dashboard: () => pedir('GET', '/dashboard'),
+  reportesSemanales: () => pedir('GET', '/reportes/semanales'),
+  generarReporte: () => pedir('POST', '/reportes/semanales/generar'),
+
+  usuarios: () => pedir('GET', '/usuarios'),
+  crearUsuario: (datos) => pedir('POST', '/usuarios', datos),
+  actualizarUsuario: (id, datos) => pedir('PUT', `/usuarios/${id}`, datos),
 }
