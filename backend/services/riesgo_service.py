@@ -1,4 +1,4 @@
-"""Identificación de riesgo (RF13, RF14, RF15).
+"""Identificación de riesgo (RF13, RF14, RF15) y generación de alertas críticas (RF16).
 
 Reglas configurables (HU 4.2):
 - umbral_asistencia: porcentaje mínimo de asistencia (R13: 85 %).
@@ -13,6 +13,7 @@ Clasificación (semáforo, HU 4.1):
 - Amarillo: hay exactamente un factor.
 - Verde: no hay factores.
 """
+import threading
 from datetime import datetime
 
 from database import tabla
@@ -36,6 +37,9 @@ DESCRIPCION_REGLAS = {
     "ausencias_consecutivas": "Ausencias consecutivas que generan alerta crítica",
     "min_anotaciones_negativas": "Anotaciones negativas que activan el factor (0 = desactivado)",
 }
+
+_lock_recalculo = threading.Lock()
+
 
 def _ahora() -> str:
     return datetime.now().isoformat(timespec="seconds")
@@ -167,3 +171,35 @@ def evaluar_todos() -> dict[str, dict]:
 def evaluar(rut: str) -> dict:
     acad.estudiante(rut)
     return evaluar_todos()[rut]
+
+
+def recalcular_y_alertar() -> dict:
+    """Recalcula el riesgo, guarda el estado vigente y genera alertas críticas nuevas.
+
+    Se ejecuta al iniciar, tras importar datos y tras modificar reglas (en segundo plano, RNF03).
+    """
+    from services import notificacion_service
+    with _lock_recalculo:
+        resultados = evaluar_todos()
+        estudiantes = {e["rut_estudiante"]: e for e in acad.estudiantes()}
+        anteriores = {f["rut_estudiante"]: f["nivel_riesgo"] for f in tabla("ESTADO_RIESGO").todos()}
+        fecha = _ahora()
+        tabla("ESTADO_RIESGO").reemplazar_todo([
+            {"rut_estudiante": rut, "nivel_riesgo": r["nivel_riesgo"], "fecha_actualizacion": fecha}
+            for rut, r in resultados.items()])
+        nuevas = 0
+        for rut, r in resultados.items():
+            e = estudiantes[rut]
+            nombre = f"{e['nombre']} {e['apellido_paterno']}"
+            for racha in r["rachas_criticas"]:
+                nuevas += notificacion_service.alertar_equipo(
+                    e, "alerta_critica", f"racha:{rut}:{racha['inicio']}",
+                    f"{nombre} ({e['nombre_nivel']}) registra {racha['dias']} ausencias consecutivas "
+                    f"desde {racha['inicio']}")
+            # En la primera evaluación no hay estado previo: no se trata como "ingreso" a rojo.
+            if anteriores and r["nivel_riesgo"] == "Rojo" and anteriores.get(rut) != "Rojo":
+                motivos = "; ".join(f["descripcion"] for f in r["factores"])
+                nuevas += notificacion_service.alertar_equipo(
+                    e, "alerta_critica", f"rojo:{rut}:{fecha}",
+                    f"{nombre} ({e['nombre_nivel']}) ingresó a riesgo alto: {motivos}")
+        return {"estudiantes_evaluados": len(resultados), "alertas_generadas": nuevas}

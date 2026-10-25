@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 
 from permisos import CONFIGURAR_REGLAS
 from routers.dependencias import requiere
@@ -15,7 +15,8 @@ def reglas_vigentes(_: dict = Depends(requiere(CONFIGURAR_REGLAS))):
 
 
 @router.put("")
-def guardar_reglas(datos: ReglasEntrada, usuario: dict = Depends(requiere(CONFIGURAR_REGLAS))):
-    """RF14 / HU 4.2: valida y persiste; el riesgo se calcula al consultar."""
+def guardar_reglas(datos: ReglasEntrada, tareas: BackgroundTasks, usuario: dict = Depends(requiere(CONFIGURAR_REGLAS))):
+    """RF14 / HU 4.2: valida, persiste y recalcula en segundo plano (RNF03)."""
     resultado = riesgo_service.guardar_reglas(datos.model_dump(), usuario["id_usuario"])
+    tareas.add_task(riesgo_service.recalcular_y_alertar)
     return {**resultado, "mensaje": "Configuración actualizada correctamente"}

@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 
 from permisos import IMPORTAR_DATOS
 from routers.dependencias import requiere
 from schemas.modelos import ImportacionEntrada
-from services import importacion_service
+from services import importacion_service, riesgo_service
 
 router = APIRouter(prefix="/importaciones", tags=["Información académica"])
 
@@ -15,7 +15,8 @@ def estado_tablas(_: dict = Depends(requiere(IMPORTAR_DATOS))):
 
 
 @router.post("")
-def importar(datos: ImportacionEntrada, _: dict = Depends(requiere(IMPORTAR_DATOS))):
-    """RF01 / HU 1.1: carga manual de uno o varios CSV. Valida todo el lote y sincroniza."""
+def importar(datos: ImportacionEntrada, tareas: BackgroundTasks, _: dict = Depends(requiere(IMPORTAR_DATOS))):
+    """RF01 / HU 1.1: carga manual de uno o varios CSV. Valida todo el lote, sincroniza y recalcula el riesgo."""
     resultado = importacion_service.importar([a.model_dump() for a in datos.archivos])
+    tareas.add_task(riesgo_service.recalcular_y_alertar)
     return {**resultado, "mensaje": "Archivos importados correctamente"}

@@ -1,9 +1,10 @@
-"""Aviso interno de derivación (HU 3.4) y contacto por WhatsApp (RF10)."""
+"""Notificaciones internas tipo campana (RF16, HU 3.4, HU 4.4) y contacto por WhatsApp (RF10)."""
 from datetime import datetime
 from urllib.parse import quote
 
 from config import CODIGO_PAIS_WHATSAPP
 from database import tabla
+from permisos import RECIBIR_ALERTAS, tiene_permiso
 from services import academico_service as acad
 from services.errores import ErrorNegocio
 
@@ -19,6 +20,42 @@ def crear(id_usuario: int | str, rut: str, tipo: str, mensaje: str, clave_evento
                "fecha": datetime.now().isoformat(timespec="seconds"), "leida": "0",
                "clave_evento": clave_evento})
     return True
+
+
+def destinatarios_alerta(e: dict) -> list[dict]:
+    """Usuarios activos que reciben alertas; el profesor jefe solo las de su curso."""
+    return [u for u in tabla("USUARIO").todos()
+            if u["activo"] == "1" and tiene_permiso(u["rol"], RECIBIR_ALERTAS)
+            and (u["rol"] != "profesor_jefe" or u["id_nivel"] == str(e["id_nivel"]))]
+
+
+def alertar_equipo(e: dict, tipo: str, clave: str, mensaje: str) -> int:
+    return sum(crear(u["id_usuario"], e["rut_estudiante"], tipo, mensaje, clave) for u in destinatarios_alerta(e))
+
+
+def listar(id_usuario: int, solo_no_leidas: bool = False) -> list[dict]:
+    filas = [n for n in tabla("NOTIFICACION").todos() if n["id_usuario"] == str(id_usuario)
+             and (not solo_no_leidas or n["leida"] == "0")]
+    return [{"id_notificacion": int(n["id_notificacion"]), "rut_estudiante": n["rut_estudiante"] or None,
+             "tipo": n["tipo"], "mensaje": n["mensaje"], "fecha": n["fecha"], "leida": n["leida"] == "1"}
+            for n in sorted(filas, key=lambda n: (n["fecha"], int(n["id_notificacion"])), reverse=True)]
+
+
+def cantidad_no_leidas(id_usuario: int) -> int:
+    return sum(1 for n in tabla("NOTIFICACION").todos() if n["id_usuario"] == str(id_usuario) and n["leida"] == "0")
+
+
+def marcar_leida(id_notificacion: int, id_usuario: int) -> None:
+    n = tabla("NOTIFICACION").actualizar(
+        lambda f: f["id_notificacion"] == str(id_notificacion) and f["id_usuario"] == str(id_usuario),
+        {"leida": "1"})
+    if not n:
+        raise ErrorNegocio(404, "Notificación no encontrada")
+
+
+def marcar_todas_leidas(id_usuario: int) -> int:
+    return tabla("NOTIFICACION").actualizar(
+        lambda f: f["id_usuario"] == str(id_usuario) and f["leida"] == "0", {"leida": "1"})
 
 
 MENSAJE_WHATSAPP = ("Hola {apoderado}, le saluda {usuario} del liceo. Quisiera conversar con usted "

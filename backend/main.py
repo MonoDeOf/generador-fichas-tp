@@ -3,7 +3,10 @@
 Ejecutar desde esta carpeta:  uvicorn main:app --reload
 Documentación interactiva:    http://127.0.0.1:8000/docs
 """
+import asyncio
+import logging
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -12,9 +15,27 @@ from fastapi.responses import JSONResponse
 
 import config
 import database
-from routers import auth, catalogos, estudiantes, importaciones, reportes, riesgo, seguimiento
-from services import auth_service, riesgo_service
+from routers import (auth, catalogos, estudiantes, importaciones, notificaciones, reportes, riesgo, seguimiento,
+                     usuarios)
+from services import auth_service, reporte_service, riesgo_service
 from services.errores import ErrorNegocio
+
+log = logging.getLogger("plataforma")
+
+
+async def tarea_reporte_semanal() -> None:
+    """Tarea programada en segundo plano (HU 1.3): el viernes a las 14:00 genera el reporte semanal."""
+    while True:
+        ahora = datetime.now()
+        semana = reporte_service.semana_actual(ahora)
+        if (ahora.weekday() == config.REPORTE_DIA_SEMANA and ahora.hour >= config.REPORTE_HORA
+                and not reporte_service.existe_reporte(semana)):
+            try:
+                await asyncio.to_thread(reporte_service.generar_reporte_semanal, semana)
+                log.info("Reporte semanal %s generado", semana)
+            except Exception:
+                log.exception("Falló la generación del reporte semanal")
+        await asyncio.sleep(60)
 
 
 @asynccontextmanager
@@ -22,7 +43,10 @@ async def ciclo_de_vida(app: FastAPI):
     database.inicializar()
     auth_service.crear_usuarios_iniciales()
     riesgo_service.inicializar_reglas()
+    await asyncio.to_thread(riesgo_service.recalcular_y_alertar)
+    tarea = asyncio.create_task(tarea_reporte_semanal())
     yield
+    tarea.cancel()
 
 
 app = FastAPI(title="API Seguimiento de trayectorias y riesgo de deserción escolar", lifespan=ciclo_de_vida)
@@ -52,5 +76,5 @@ def inicio():
     return {"mensaje": "API de seguimiento de trayectorias escolares funcionando"}
 
 
-for modulo in (auth, catalogos, estudiantes, seguimiento, riesgo, importaciones, reportes):
+for modulo in (auth, catalogos, estudiantes, seguimiento, riesgo, importaciones, notificaciones, reportes, usuarios):
     app.include_router(modulo.router)
