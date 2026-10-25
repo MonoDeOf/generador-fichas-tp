@@ -1,6 +1,0 @@
-__pycache__/
-*.pyc
-backend/escuela.db
-backend/escuela.tmp
-backend/risk_config.json
-node_modules/
