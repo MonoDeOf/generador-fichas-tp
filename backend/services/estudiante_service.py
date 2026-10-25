@@ -77,13 +77,14 @@ def ficha(usuario: dict, rut: str) -> dict:
     return resultado
 
 
-TELEFONO = re.compile(r"^\d{9}$")
+# Solo dígitos ASCII: \d también acepta dígitos Unicode (por ejemplo, "٩") y $ acepta un salto de línea final.
+TELEFONO = re.compile(r"[0-9]{9}")
 
 
 def actualizar_apoderado(usuario: dict, rut: str, datos: dict) -> dict:
     """Modifica nombre, apellido y teléfono del apoderado titular (HU 2.2, RNF-13: 9 dígitos)."""
     e = obtener_visible(usuario, rut)
-    if not TELEFONO.match(datos["telefono"]):
+    if not TELEFONO.fullmatch(datos["telefono"]):
         raise ErrorNegocio(400, "El teléfono debe tener exactamente 9 dígitos numéricos")
     cambios = {"nombre": datos["nombre"].strip(), "apellido_apoderado": datos["apellido_apoderado"].strip(),
                "telefono": datos["telefono"]}

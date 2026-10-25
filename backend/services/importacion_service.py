@@ -11,6 +11,7 @@ registro con la misma clave se actualiza y uno nuevo se agrega.
 """
 import csv
 import io
+import re
 from datetime import date
 
 from database import TABLAS_BASE, tabla
@@ -18,6 +19,7 @@ from services import academico_service as acad
 from services.errores import ErrorNegocio
 
 MAX_ERRORES = 50
+TELEFONO = re.compile(r"[0-9]{9}")  # solo dígitos ASCII (RNF-13)
 
 # Orden de carga según las dependencias entre tablas (claves foráneas).
 ORDEN = ["NIVEL", "ESPECIALIDAD", "APODERADO", "ASIGNATURA", "COMBO", "ESTUDIANTE", "ELECTIVO", "PLAN_COMUN",
@@ -86,7 +88,7 @@ def _validar_dominio(t: str, f: dict, linea: int, estado: dict) -> list[str]:
     """Restricciones CHECK del esquema y reglas del MER que dependen solo de la fila."""
     e = []
     err = lambda m: e.append(f"Línea {linea}: {m}")
-    if t == "APODERADO" and not (f["telefono"].isdigit() and len(f["telefono"]) == 9):
+    if t == "APODERADO" and not TELEFONO.fullmatch(f["telefono"]):
         err(f"teléfono '{f['telefono']}' debe tener 9 dígitos")
     if t == "NIVEL" and f["nombre_nivel"] not in ("1M", "2M", "3M", "4M"):
         err(f"nombre_nivel '{f['nombre_nivel']}' no válido (1M, 2M, 3M o 4M)")

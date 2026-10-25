@@ -12,7 +12,7 @@ class LoginEntrada(BaseModel):
 class ApoderadoEntrada(BaseModel):
     nombre: str = Field(min_length=1, max_length=50)
     apellido_apoderado: str = Field(min_length=1, max_length=50)
-    telefono: str = Field(pattern=r"^\d{9}$", description="9 dígitos numéricos (HU 2.2)")
+    telefono: str = Field(pattern=r"^[0-9]{9}$", description="9 dígitos numéricos (HU 2.2)")
 
 
 class ReglasEntrada(BaseModel):
