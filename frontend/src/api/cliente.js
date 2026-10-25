@@ -55,7 +55,12 @@ export const api = {
   catalogos: () => pedir('GET', '/catalogos'),
 
   estudiantes: (filtros = {}) => pedir('GET', '/estudiantes' + consulta(filtros)),
+  ficha: (rut) => pedir('GET', `/estudiantes/${r(rut)}`),
+  asistencia: (rut) => pedir('GET', `/estudiantes/${r(rut)}/asistencia`),
+  calificaciones: (rut) => pedir('GET', `/estudiantes/${r(rut)}/calificaciones`),
+  anotaciones: (rut) => pedir('GET', `/estudiantes/${r(rut)}/anotaciones`),
   riesgo: (rut) => pedir('GET', `/estudiantes/${r(rut)}/riesgo`),
+  actualizarApoderado: (rut, datos) => pedir('PUT', `/estudiantes/${r(rut)}/apoderado`, datos),
 
   reglas: () => pedir('GET', '/config/reglas'),
   guardarReglas: (datos) => pedir('PUT', '/config/reglas', datos),

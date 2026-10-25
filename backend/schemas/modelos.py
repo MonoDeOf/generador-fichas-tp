@@ -9,6 +9,12 @@ class LoginEntrada(BaseModel):
     contrasena: str = Field(min_length=1)
 
 
+class ApoderadoEntrada(BaseModel):
+    nombre: str = Field(min_length=1, max_length=50)
+    apellido_apoderado: str = Field(min_length=1, max_length=50)
+    telefono: str = Field(pattern=r"^\d{9}$", description="9 dígitos numéricos (HU 2.2)")
+
+
 class ReglasEntrada(BaseModel):
     umbral_asistencia: float
     nota_deficiente: float

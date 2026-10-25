@@ -3,6 +3,7 @@ import { Cargando } from './componentes/Estado'
 import { useRuta } from './hooks/useRuta'
 import { useSesion } from './hooks/useSesion'
 import Dashboard from './paginas/Dashboard'
+import FichaEstudiante from './paginas/ficha/FichaEstudiante'
 import Importacion from './paginas/Importacion'
 import ListaEstudiantes from './paginas/ListaEstudiantes'
 import Login from './paginas/Login'
@@ -11,6 +12,7 @@ import ReglasRiesgo from './paginas/ReglasRiesgo'
 const PAGINAS = {
   dashboard: { componente: Dashboard, permiso: 'ver_dashboard' },
   estudiantes: { componente: ListaEstudiantes, permiso: 'ver_estudiantes' },
+  estudiante: { componente: FichaEstudiante, permiso: 'ver_ficha' },
   importar: { componente: Importacion, permiso: 'importar_datos' },
   reglas: { componente: ReglasRiesgo, permiso: 'configurar_reglas' },
 }
