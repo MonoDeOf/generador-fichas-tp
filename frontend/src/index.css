@@ -1,7 +1,29 @@
-html,
-body,
-#root {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-}
+/* Estilos mínimos: el diseño visual se trabajará por separado. */
+body { background: #f5f6f8; }
+
+.semaforo { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 1px solid #0003; vertical-align: middle; }
+.semaforo-Rojo { background: #dc3545; animation: parpadeo 1s infinite; }
+.semaforo-Amarillo { background: #ffc107; }
+.semaforo-Verde { background: #198754; }
+@keyframes parpadeo { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .semaforo-Rojo { animation: none; } }
+
+.barra-grafico { display: flex; align-items: center; gap: .5rem; margin-bottom: .4rem; }
+.barra-grafico .etiqueta { width: 11rem; flex-shrink: 0; font-size: .9rem; }
+.barra-grafico .pista { flex: 1; background: #e9ecef; border-radius: 4px; height: 1.4rem; }
+.barra-grafico .relleno { height: 100%; border-radius: 4px; background: #0d6efd; }
+.barra-grafico .valor { width: 4rem; text-align: right; font-size: .9rem; }
+
+.calendario { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.calendario .dia { border: 1px solid #dee2e6; border-radius: 4px; padding: 4px; min-height: 2.6rem; font-size: .8rem; background: #fff; }
+.calendario .dia.ausente { background: #f8d7da; border-color: #dc3545; }
+.calendario .dia.atraso { background: #fff3cd; border-color: #ffc107; }
+.calendario .cabecera { font-weight: 600; text-align: center; font-size: .8rem; }
+
+.linea-tiempo { border-left: 3px solid #adb5bd; padding-left: 1rem; list-style: none; margin: 0; }
+.linea-tiempo li { position: relative; margin-bottom: 1rem; }
+.linea-tiempo li::before { content: ""; position: absolute; left: -1.45rem; top: .35rem; width: 12px; height: 12px; border-radius: 50%; background: #0d6efd; }
+.linea-tiempo li.caso::before { background: #6f42c1; }
+
+.modal-fondo { position: fixed; inset: 0; background: #0008; display: flex; align-items: flex-start; justify-content: center; padding: 3rem 1rem; z-index: 1050; overflow-y: auto; }
+.modal-caja { background: #fff; border-radius: 8px; width: 100%; max-width: 600px; }
