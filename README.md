@@ -44,8 +44,7 @@ Estructura del Repositorio
 
 ├── README.md
 ├── generador_fichas/            
-│   ├── main.py   
-│   ├── BD.xlsx
+│   ├── main.py   │   ├── BD.xlsx
 │   ├── RegistrosAuditoria.json
 │   ├── src/
 │   │   ├── generador_fichas.py
